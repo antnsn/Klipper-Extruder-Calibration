@@ -4,37 +4,63 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Printer Steps Calculator</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pico.css@2/css/pico.min.css">
+    <title>Klipper Extruder Calibration</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
 </head>
-<body class="container">
-    <h2 class="text-center">3D Printer Steps per mm Calculator</h2>
-    <form action="/" method="post">
-        <div class="form-group">
-            <label for="motor_steps">Motor Steps:</label><br>
-            <input type="text" id="motor_steps" name="motor_steps" required class="form-control"><br>
-        </div>
-        
-        <div class="form-group">
-            <label for="microstepping">Microstepping:</label><br>
-            <input type="text" id="microstepping" name="microstepping" required class="form-control"><br>
-        </div>
+<body class="flex items-center justify-center h-screen bg-light">
 
-        <div class="form-group">
-            <label for="belt_pitch">Belt Pitch:</label><br>
-            <input type="text" id="belt_pitch" name="belt_pitch" required class="form-control"><br>
-        </div>
-        
-        <div class="form-group">
-            <label for="pulley_tooth">Pulley Teeth:</label><br>
-            <input type="text" id="pulley_tooth" name="pulley_tooth" required class="form-control"><br>
-        </div>
-        
-        <input type="submit" value="Calculate" class="btn btn-primary">
-    </form>
-    <br>
-    {% if result != None %}
-        <h3 class="text-center">Result: {{ result }} steps/mm</h3>
-    {% endif %}
+    <div class="container p-3 bg-white shadow rounded">
+
+        <h2>Klipper Extruder Calibration</h2>
+
+        <!-- User Instruction Guide -->
+        <section>
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Ensure the extruder has filament and the hotend is at the correct temperature.</li>
+                <li>Place a mark on the filament approximately 70mm from the extruder intake.</li>
+                <li>Measure the exact distance from the mark to the extruder and input it as the "Initial Mark Distance".</li>
+                <li>Extrude the filament at a slow rate (like 50mm in 50 seconds).</li>
+                <li>Measure the new distance from the mark to the extruder and input it as the "Subsequent Mark Distance".</li>
+                <li>Input your current "Rotation Distance" and the "Requested Extrude Distance" you used.</li>
+                <li>Click "Calculate" to get the new calibration value for the rotation_distance.</li>
+            </ol>
+        </section>
+
+        <!-- Calculator Form -->
+        <form action="/" method="post" class="my-3">
+            <label for="initial_distance">Initial Mark Distance (mm):</label>
+            <input type="text" id="initial_distance" name="initial_distance" required>
+
+            <label for="subsequent_distance">Subsequent Mark Distance (mm):</label>
+            <input type="text" id="subsequent_distance" name="subsequent_distance" required>
+
+            <label for="rotation_distance">Current Rotation Distance (mm/rotation):</label>
+            <input type="text" id="rotation_distance" name="rotation_distance" required>
+
+            <label for="requested_extrude">Requested Extrude Distance (mm):</label>
+            <input type="text" id="requested_extrude" name="requested_extrude" required>
+
+            <input type="submit" value="Calculate">
+        </form>
+
+        {% if result != None %}
+            <div class="my-3">
+                <h3>New rotation_distance: {{ result }} mm/rotation</h3>
+                <div class="flex items-center">
+                    <input type="text" id="rotationResult" class="border p-1 w-3/4" value="rotation_distance: {{ result }}" readonly>
+                    <button onclick="copyToClipboard()" class="ml-2 p-1 border bg-primary text-white">Copy</button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const el = document.getElementById('rotationResult');
+            el.select();
+            document.execCommand('copy');
+        }
+    </script>
 </body>
 </html>
